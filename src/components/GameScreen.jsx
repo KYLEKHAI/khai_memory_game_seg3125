@@ -50,9 +50,7 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
   // frutiger_aero.exe image slideshow
   const frutigerImages = [];
   for (let i = 89; i <= 188; i++) {
-    frutigerImages.push(
-      `/src/assets/images-gifs/frutiger-aero-exe/asadal_stock_${i}.jpg`
-    );
+    frutigerImages.push(`/images-gifs/frutiger-aero-exe/asadal_stock_${i}.jpg`);
   }
 
   const shuffleArray = (array) => {
@@ -352,11 +350,18 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
                 </div>
               ) : (
                 <div className="frutiger-slideshow">
-                  <img
-                    src={shuffledImages[currentImageIndex]}
-                    alt={`Frutiger Aero ${currentImageIndex + 1}`}
-                    className="slideshow-image"
-                  />
+                  {shuffledImages.length > 0 ? (
+                    <img
+                      src={shuffledImages[currentImageIndex]}
+                      alt={`Frutiger Aero ${currentImageIndex + 1}`}
+                      className="slideshow-image"
+                      onError={(e) => {
+                        console.log("Image failed to load:", e.target.src);
+                      }}
+                    />
+                  ) : (
+                    <div>Loading images...</div>
+                  )}
                 </div>
               )}
             </div>
