@@ -1,0 +1,768 @@
+* {
+  font-family: "Segoe UI", "Calibri", "Arial", sans-serif;
+}
+
+.game-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.game-screen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("/src/assets/images-gifs/windows-xp.jpg") no-repeat center
+    center fixed;
+  background-size: cover;
+  z-index: -1;
+}
+
+.game-header {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  gap: 20px;
+  z-index: 100;
+}
+
+.back-btn {
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #222;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 16px rgba(31, 38, 135, 0.12);
+  font-family: "Segoe UI", "Calibri", "Arial", sans-serif;
+  backdrop-filter: blur(5px);
+}
+
+.reset-btn {
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(180deg, #ff6b6b 0%, #dc3545 50%, #c82333 100%);
+  border: 2px solid #dc3545;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+  font-family: "Segoe UI", "Calibri", "Arial", sans-serif;
+  backdrop-filter: blur(5px);
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: #0078d7;
+  transform: scale(1.05);
+}
+
+.reset-btn:hover {
+  background: linear-gradient(180deg, #ff8a8a 0%, #e55565 50%, #d73a49 100%);
+  border-color: #e55565;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.game-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 40px 40px;
+  gap: 60px;
+}
+
+.message-display {
+  position: relative;
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-message {
+  font-size: 1.4rem;
+  font-weight: 400;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(180deg, #ece9d8 0%, #ddd6c7 100%);
+  border: 2px outset #d4d0c8;
+  border-radius: 0;
+  color: #000;
+  letter-spacing: 0;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  backdrop-filter: none;
+  animation: messageAppear 0.3s ease-out;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  min-width: 320px;
+  max-width: 400px;
+}
+
+.message-header {
+  background: linear-gradient(90deg, #166aca 0%, #2e8dd6 50%, #166aca 100%);
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #0f5bb3;
+}
+
+.message-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.message-app-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.message-close-btn {
+  background: linear-gradient(180deg, #f0f0f0 0%, #d4d0c8 50%, #c0c0c0 100%);
+  border: 1px outset #d4d0c8;
+  color: #000;
+  width: 16px;
+  height: 14px;
+  font-size: 10px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+}
+
+.message-close-btn:hover {
+  background: linear-gradient(180deg, #ff8a8a 0%, #ff6b6b 50%, #dc3545 100%);
+  color: white;
+}
+
+.message-close-btn:active {
+  border: 1px inset #d4d0c8;
+  background: linear-gradient(180deg, #d0d0d0 0%, #e0e0e0 50%, #f0f0f0 100%);
+}
+
+.message-content {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-system-icon {
+  width: 32px;
+  height: 32px;
+  background: radial-gradient(circle, #4a90e2 0%, #2171b5 100%);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.message-text {
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+.message-buttons {
+  padding: 8px 16px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.message-ok-btn {
+  background: linear-gradient(180deg, #f0f0f0 0%, #d4d0c8 50%, #c0c0c0 100%);
+  border: 1px outset #d4d0c8;
+  color: #000;
+  padding: 4px 16px;
+  font-size: 0.85rem;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  cursor: pointer;
+  min-width: 75px;
+}
+
+.message-ok-btn:hover {
+  background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 50%, #d0d0d0 100%);
+}
+
+.message-ok-btn:active {
+  border: 1px inset #d4d0c8;
+  background: linear-gradient(180deg, #d0d0d0 0%, #e0e0e0 50%, #f0f0f0 100%);
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gates-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.gate {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 16px rgba(31, 38, 135, 0.1);
+}
+
+.gate:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: scale(1.05);
+}
+
+.gate.occupied {
+  background: rgba(0, 255, 0, 0.2);
+  border-color: rgba(0, 255, 0, 0.6);
+}
+
+.gate img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+.gate-number {
+  position: absolute;
+  bottom: 5px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #222;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 20px;
+  text-align: center;
+}
+
+.keys-row {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.key {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  cursor: grab;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 16px rgba(31, 38, 135, 0.1);
+}
+
+.key:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(31, 38, 135, 0.2);
+}
+
+.key:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.key.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.key img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+.key-number {
+  position: absolute;
+  bottom: 5px;
+  right: 6px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #222;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 50%;
+  min-width: 18px;
+  text-align: center;
+}
+
+.game-info {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 15px;
+  padding: 15px 25px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 16px rgba(31, 38, 135, 0.1);
+}
+
+.game-info p {
+  margin: 5px 0;
+  color: #222;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .game-content {
+    padding: 80px 20px 20px;
+    gap: 40px;
+  }
+
+  .gates-row {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .gate {
+    width: 100px;
+    height: 100px;
+  }
+
+  .gate img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .keys-row {
+    gap: 15px;
+  }
+
+  .key {
+    width: 80px;
+    height: 80px;
+  }
+
+  .key img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .game-message {
+    font-size: 2rem;
+    padding: 15px 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gates-row,
+  .keys-row {
+    gap: 10px;
+  }
+
+  .gate {
+    width: 80px;
+    height: 80px;
+  }
+
+  .gate img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .key {
+    width: 70px;
+    height: 70px;
+  }
+
+  .key img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.desktop-icon {
+  position: absolute;
+  top: 80px;
+  right: 30px;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  z-index: 1500;
+  user-select: none;
+}
+
+.desktop-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.desktop-icon:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.desktop-icon-image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 4px;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.desktop-icon-label {
+  color: white;
+  font-size: 11px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  text-align: center;
+  line-height: 1.2;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  word-wrap: break-word;
+  max-width: 72px;
+}
+
+.frutiger-app-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.frutiger-app-window {
+  width: 600px;
+  height: 450px;
+  background: linear-gradient(180deg, #ece9d8 0%, #ddd6c7 100%);
+  border: 2px outset #d4d0c8;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.frutiger-app-titlebar {
+  height: 26px;
+  background: linear-gradient(90deg, #166aca 0%, #2e8dd6 50%, #166aca 100%);
+  border-bottom: 1px solid #0f5bb3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 4px;
+}
+
+.frutiger-app-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding-left: 4px;
+}
+
+.frutiger-app-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.frutiger-app-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.frutiger-minimize-btn,
+.frutiger-maximize-btn,
+.frutiger-close-btn {
+  width: 16px;
+  height: 14px;
+  background: linear-gradient(180deg, #f0f0f0 0%, #d4d0c8 50%, #c0c0c0 100%);
+  border: 1px outset #d4d0c8;
+  font-size: 9px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  line-height: 1;
+  padding: 0;
+}
+
+.frutiger-close-btn:hover {
+  background: linear-gradient(180deg, #ff8a8a 0%, #ff6b6b 50%, #dc3545 100%);
+  color: white;
+}
+
+.frutiger-minimize-btn:active,
+.frutiger-maximize-btn:active,
+.frutiger-close-btn:active {
+  border: 1px inset #d4d0c8;
+}
+
+.frutiger-app-menubar {
+  height: 20px;
+  background: linear-gradient(180deg, #f0f0f0 0%, #e8e8e8 100%);
+  border-bottom: 1px solid #c0c0c0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 16px;
+  font-size: 11px;
+  color: #000;
+}
+
+.frutiger-app-menubar span {
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.frutiger-app-menubar span:hover {
+  background: rgba(0, 120, 215, 0.1);
+}
+
+.frutiger-app-content {
+  flex: 1;
+  background: white;
+  border: 1px inset #d4d0c8;
+  margin: 4px;
+  padding: 20px;
+  overflow: auto;
+  position: relative;
+  min-height: 300px;
+}
+
+.frutiger-welcome {
+  text-align: center;
+  position: relative;
+}
+
+.frutiger-welcome h2 {
+  color: #166aca;
+  font-size: 24px;
+  margin: 0 0 20px 0;
+  font-weight: 600;
+}
+
+.frutiger-welcome p {
+  color: #333;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 10px 0;
+}
+
+.frutiger-ok-btn {
+  background: linear-gradient(135deg, #4db8ff 0%, #00d4aa 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 30px;
+  cursor: pointer;
+  margin: 10px auto 0;
+  box-shadow: 0 6px 20px rgba(77, 184, 255, 0.3);
+  transition: all 0.3s ease;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  letter-spacing: 1px;
+  display: block;
+  z-index: 10;
+  position: relative;
+}
+
+.frutiger-ok-btn:hover {
+  background: linear-gradient(135deg, #5bc2ff 0%, #00e6bb 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(77, 184, 255, 0.4);
+}
+
+.frutiger-ok-btn:active {
+  transform: translateY(0px);
+  box-shadow: 0 4px 15px rgba(77, 184, 255, 0.3);
+}
+
+.frutiger-decoration {
+  position: relative;
+  height: 150px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(70, 170, 255, 0.3) 0%,
+    rgba(0, 255, 170, 0.2) 100%
+  );
+  animation: float 4s ease-in-out infinite;
+}
+
+.bubble-1 {
+  width: 60px;
+  height: 60px;
+  top: 20px;
+  left: 50px;
+  animation-delay: 0s;
+}
+
+.bubble-2 {
+  width: 40px;
+  height: 40px;
+  top: 80px;
+  right: 80px;
+  animation-delay: 2s;
+}
+
+.bubble-3 {
+  width: 80px;
+  height: 80px;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 1s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-20px);
+    opacity: 1;
+  }
+}
+
+.frutiger-slideshow {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.slideshow-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.5s ease-in-out;
+}
+
+.frutiger-app-statusbar {
+  height: 18px;
+  background: linear-gradient(180deg, #f0f0f0 0%, #e8e8e8 100%);
+  border-top: 1px solid #c0c0c0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 10px;
+  color: #666;
+}
+
+/* Responsive adjustments for Frutiger app */
+@media (max-width: 768px) {
+  .frutiger-app-window {
+    width: 90vw;
+    height: 70vh;
+    max-width: 500px;
+  }
+
+  .frutiger-welcome h2 {
+    font-size: 20px;
+  }
+
+  .frutiger-decoration {
+    height: 150px;
+  }
+
+  .desktop-icon {
+    top: 60px;
+    right: 15px;
+    width: 70px;
+  }
+
+  .desktop-icon-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .desktop-icon-label {
+    font-size: 10px;
+    max-width: 60px;
+  }
+}
