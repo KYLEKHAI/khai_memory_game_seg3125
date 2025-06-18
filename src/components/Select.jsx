@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Select.css";
 import logo from "../assets/images-gifs/gateway-exe-green-logo.png";
 
-const Select = ({ onBackToMenu, onStartGame }) => {
+const Select = ({ onBackToMenu, onStartGame, musicEnabled }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState("easy");
+  const hologramAudioRef = useRef(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -11,6 +12,26 @@ const Select = ({ onBackToMenu, onStartGame }) => {
       document.body.style.overflow = "";
     };
   }, []);
+
+  useEffect(() => {
+    if (hologramAudioRef.current) {
+      if (musicEnabled) {
+        hologramAudioRef.current.play().catch((error) => {
+          console.log("Hologram music play failed:", error);
+        });
+      } else {
+        hologramAudioRef.current.pause();
+        hologramAudioRef.current.currentTime = 0;
+      }
+    }
+
+    return () => {
+      if (hologramAudioRef.current) {
+        hologramAudioRef.current.pause();
+        hologramAudioRef.current.currentTime = 0;
+      }
+    };
+  }, [musicEnabled]);
 
   const difficultyOptions = {
     easy: {
@@ -116,6 +137,16 @@ const Select = ({ onBackToMenu, onStartGame }) => {
           </button>
         </div>
       </div>
+
+      <audio
+        ref={hologramAudioRef}
+        loop
+        preload="auto"
+        style={{ display: "none" }}
+      >
+        <source src="/src/assets/music/HOLOGRAM.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 };

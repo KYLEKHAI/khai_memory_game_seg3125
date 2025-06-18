@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./GameScreen.css";
 import gateImage from "../assets/images-gifs/gate.png";
 import logo from "../assets/images-gifs/gateway-exe-blue-logo.png";
+import greenLogo from "../assets/images-gifs/gateway-exe-green-logo.png";
 import frutigerIcon from "../assets/images-gifs/frutiger-aero-exe.png";
 import keyYellow from "../assets/images-gifs/key-yellow.png";
 import keyGreen from "../assets/images-gifs/key-green.png";
@@ -10,8 +11,15 @@ import keyBlue from "../assets/images-gifs/key-blue.png";
 import keyPurple from "../assets/images-gifs/key-purple.png";
 import keyPink from "../assets/images-gifs/key-pink.png";
 import keyCyan from "../assets/images-gifs/key-cyan.png";
+import commandPromptIcon from "../assets/images-gifs/command-prompt.png";
 
-const GameScreen = ({ difficulty, onBackToSelect }) => {
+const GameScreen = ({
+  difficulty,
+  onBackToSelect,
+  onLeaseMusicStart,
+  onLeaseMusicStop,
+  musicEnabled,
+}) => {
   const [keys, setKeys] = useState([]);
   const [gates, setGates] = useState([]);
   const [draggedKey, setDraggedKey] = useState(null);
@@ -26,6 +34,12 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
   const [showSlideshow, setShowSlideshow] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [shuffledImages, setShuffledImages] = useState([]);
+  const [musicStarted, setMusicStarted] = useState(false);
+  const [typewriterText, setTypewriterText] = useState("");
+  const [typewriterComplete, setTypewriterComplete] = useState(false);
+  const [typewriterTrigger, setTypewriterTrigger] = useState(0);
+  const audioRef = useRef(null);
+  const stichingAudioRef = useRef(null);
 
   const keyImages = [
     keyYellow,
@@ -74,6 +88,8 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    console.log("GameScreen mounted with musicEnabled:", musicEnabled);
+
     return () => {
       document.body.style.overflow = "";
       if (messageTimer) {
@@ -82,16 +98,76 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
     };
   }, [messageTimer]);
 
+  const [audioLoaded, setAudioLoaded] = useState(false);
+
+  useEffect(() => {
+    console.log("GameScreen music effect:", {
+      musicEnabled,
+      showFrutigerApp,
+      audioRefExists: !!stichingAudioRef.current,
+      audioLoaded,
+    });
+
+    if (stichingAudioRef.current && audioLoaded) {
+      if (musicEnabled && !showFrutigerApp) {
+        console.log("Trying to play STICHING music");
+        const audio = stichingAudioRef.current;
+
+        audio
+          .play()
+          .then(() => {
+            console.log("STICHING music started successfully");
+            audio.currentTime = 1;
+          })
+          .catch((error) => {
+            console.log("Stiching music play failed:", error);
+          });
+      } else {
+        console.log("Pausing STICHING music");
+        stichingAudioRef.current.pause();
+        if (!musicEnabled) {
+          stichingAudioRef.current.currentTime = 0;
+        }
+      }
+    } else {
+      console.log("STICHING audio ref is null or not loaded yet");
+    }
+
+    return () => {
+      if (stichingAudioRef.current) {
+        stichingAudioRef.current.pause();
+        stichingAudioRef.current.currentTime = 0;
+      }
+    };
+  }, [musicEnabled, showFrutigerApp, audioLoaded]);
+
   useEffect(() => {
     const config = getGameConfig(difficulty);
     setGameData(config);
     initializeGame(config);
   }, [difficulty]);
+  useEffect(() => {
+    const fullText =
+      "Win the game by dragging and dropping the only working key into the only working gate!";
+    let currentIndex = 0;
+    setTypewriterText("");
+    setTypewriterComplete(false);
 
-  // Slideshow effect
+    const typeInterval = setInterval(() => {
+      if (currentIndex < fullText.length) {
+        setTypewriterText(fullText.slice(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        setTypewriterComplete(true);
+        clearInterval(typeInterval);
+      }
+    }, 50);
+
+    return () => clearInterval(typeInterval);
+  }, [gameData, typewriterTrigger]);
+
   useEffect(() => {
     if (showSlideshow) {
-      // Shuffle images when slideshow starts
       if (shuffledImages.length === 0) {
         setShuffledImages(shuffleArray(frutigerImages));
         setCurrentImageIndex(0);
@@ -105,7 +181,6 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
     }
   }, [showSlideshow, shuffledImages.length, frutigerImages, shuffleArray]);
 
-  // Create and initialize game (gates and keys)
   const initializeGame = (config) => {
     const selectedKeyIndices = [];
     const gameKeys = [];
@@ -148,7 +223,6 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
     setShuffledImages([]);
   };
 
-  // Drag and drop function
   const handleDragStart = (e, keyIndex) => {
     if (gameWon) {
       e.preventDefault();
@@ -166,7 +240,6 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
 
     if (draggedKey === null) return;
 
-    // Check for game winner (matching key and gate)
     if (draggedKey === correctKeyIndex && gateIndex === correctGateIndex) {
       setMessage("Gate Opened!\nA new application has been added to desktop!");
       setGameWon(true);
@@ -175,8 +248,6 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
           index === gateIndex ? { ...gate, occupied: true } : gate
         )
       );
-
-      // Show frutiger_aero.exe application
     } else {
       setMessage("Gate Closed");
     }
@@ -184,10 +255,10 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
     setDraggedKey(null);
   };
 
-  // Game reset
   const resetGame = () => {
     if (gameData) {
       initializeGame(gameData);
+      setTypewriterTrigger((prev) => prev + 1);
     }
   };
 
@@ -198,9 +269,13 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
   return (
     <div className="game-screen">
       <div className="game-header">
-        <button className="back-btn" onClick={onBackToSelect}>
-          Back to Select
-        </button>
+        <div className="header-logo-container">
+          <img src={greenLogo} alt="Green Logo" className="header-logo" />
+          <div className="speech-bubble" onClick={onBackToSelect}>
+            Back To Select
+            <div className="bubble-tail"></div>
+          </div>
+        </div>
         <button className="reset-btn" onClick={resetGame}>
           Reset Game
         </button>
@@ -278,10 +353,52 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
         </div>
       </div>
 
+      <div className="command-prompt">
+        <div className="command-prompt-header">
+          <div className="command-prompt-title">
+            <img
+              src={commandPromptIcon}
+              alt="Command Prompt"
+              className="command-prompt-header-icon"
+            />
+            <span className="command-prompt-icon">C:\&gt;</span>
+            Command Prompt
+          </div>
+        </div>
+        <div className="command-prompt-content">
+          <div className="command-line">
+            <span className="command-prompt-path">C:\WINDOWS\system32&gt;</span>
+            <span className="command-text">
+              {typewriterText}
+              {!typewriterComplete && <span className="cursor">|</span>}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {showFrutigerIcon && (
         <div
           className="desktop-icon"
-          onDoubleClick={() => setShowFrutigerApp(true)}
+          onDoubleClick={() => {
+            if (!musicStarted && audioRef.current && musicEnabled) {
+              if (stichingAudioRef.current) {
+                stichingAudioRef.current.pause();
+              }
+
+              audioRef.current.play().catch((error) => {
+                console.log("Audio play failed:", error);
+              });
+              setMusicStarted(true);
+              if (onLeaseMusicStart) {
+                onLeaseMusicStart();
+              }
+            }
+
+            setShuffledImages(shuffleArray(frutigerImages));
+            setCurrentImageIndex(0);
+            setShowSlideshow(true);
+            setShowFrutigerApp(true);
+          }}
         >
           <img
             src={frutigerIcon}
@@ -309,7 +426,33 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
                 <button className="frutiger-maximize-btn">□</button>
                 <button
                   className="frutiger-close-btn"
-                  onClick={() => setShowFrutigerApp(false)}
+                  onClick={() => {
+                    if (audioRef.current) {
+                      audioRef.current.pause();
+                      audioRef.current.currentTime = 0;
+                    }
+                    setMusicStarted(false);
+                    setShowFrutigerApp(false);
+                    setShowSlideshow(false);
+                    setShuffledImages([]);
+                    setCurrentImageIndex(0);
+
+                    if (stichingAudioRef.current && musicEnabled) {
+                      const audio = stichingAudioRef.current;
+                      audio
+                        .play()
+                        .then(() => {
+                          audio.currentTime = 1;
+                        })
+                        .catch((error) => {
+                          console.log("Stiching music resume failed:", error);
+                        });
+                    }
+
+                    if (onLeaseMusicStop) {
+                      onLeaseMusicStop();
+                    }
+                  }}
                 >
                   ×
                 </button>
@@ -323,52 +466,45 @@ const GameScreen = ({ difficulty, onBackToSelect }) => {
               <span>Help</span>
             </div>
             <div className="frutiger-app-content">
-              {!showSlideshow ? (
-                <div className="frutiger-welcome">
-                  <h2>Welcome to Frutiger Aero</h2>
-                  <p>
-                    Congratulations! You have successfully opened the gateway.
-                  </p>
-                  <p>
-                    You are now connected to the <em>Frutiger Aero Network</em>.
-                  </p>
-                  <div className="frutiger-decoration">
-                    <div className="bubble bubble-1"></div>
-                    <div className="bubble bubble-2"></div>
-                    <div className="bubble bubble-3"></div>
-                  </div>
-                  <button
-                    className="frutiger-ok-btn"
-                    onClick={() => {
-                      setShuffledImages(shuffleArray(frutigerImages));
-                      setCurrentImageIndex(0);
-                      setShowSlideshow(true);
+              <div className="frutiger-slideshow">
+                {shuffledImages.length > 0 ? (
+                  <img
+                    src={shuffledImages[currentImageIndex]}
+                    alt={`Frutiger Aero ${currentImageIndex + 1}`}
+                    className="slideshow-image"
+                    onError={(e) => {
+                      console.log("Image failed to load:", e.target.src);
                     }}
-                  >
-                    Enter
-                  </button>
-                </div>
-              ) : (
-                <div className="frutiger-slideshow">
-                  {shuffledImages.length > 0 ? (
-                    <img
-                      src={shuffledImages[currentImageIndex]}
-                      alt={`Frutiger Aero ${currentImageIndex + 1}`}
-                      className="slideshow-image"
-                      onError={(e) => {
-                        console.log("Image failed to load:", e.target.src);
-                      }}
-                    />
-                  ) : (
-                    <div>Loading images...</div>
-                  )}
-                </div>
-              )}
+                  />
+                ) : (
+                  <div>Loading images...</div>
+                )}
+              </div>
             </div>
             <div className="frutiger-app-statusbar">Status: Connected</div>
           </div>
         </div>
       )}
+
+      <audio ref={audioRef} loop preload="auto" style={{ display: "none" }}>
+        <source src="/src/assets/music/LEASE.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+
+      <audio
+        ref={stichingAudioRef}
+        loop
+        preload="auto"
+        style={{ display: "none" }}
+        onLoadedData={() => {
+          console.log("STICHING audio loaded");
+          setAudioLoaded(true);
+        }}
+        onError={(e) => console.log("STICHING audio error:", e)}
+      >
+        <source src="/src/assets/music/STICHING.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 };

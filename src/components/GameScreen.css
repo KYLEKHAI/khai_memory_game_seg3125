@@ -1,4 +1,4 @@
-* {
+.game-screen * {
   font-family: "Segoe UI", "Calibri", "Arial", sans-serif;
 }
 
@@ -35,20 +35,66 @@
   z-index: 100;
 }
 
-.back-btn {
-  padding: 12px 20px;
-  font-size: 1rem;
-  font-weight: 700;
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-logo {
+  height: 60px;
+  width: auto;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.2));
+  animation: float-bubble 4s ease-in-out infinite;
+}
+
+.speech-bubble {
+  position: relative;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid #fff;
+  border-radius: 20px;
   color: #222;
-  background: rgba(255, 255, 255, 0.5);
-  border: 2px solid #fff;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s, transform 0.1s;
-  letter-spacing: 2px;
-  box-shadow: 0 4px 16px rgba(31, 38, 135, 0.12);
+  font-size: 0.95rem;
+  font-weight: 600;
   font-family: "Segoe UI", "Calibri", "Arial", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
   backdrop-filter: blur(5px);
+  box-shadow: 0 4px 16px rgba(31, 38, 135, 0.1);
+  margin-left: 10px;
+  animation: float-bubble 4s ease-in-out infinite;
+}
+
+.speech-bubble:hover {
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.bubble-tail {
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 12px solid rgba(255, 255, 255, 0.3);
+}
+
+.speech-bubble:hover .bubble-tail {
+  border-right-color: rgba(255, 255, 255, 0.5);
+}
+
+@keyframes float-bubble {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .reset-btn {
@@ -65,12 +111,6 @@
   box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
   font-family: "Segoe UI", "Calibri", "Arial", sans-serif;
   backdrop-filter: blur(5px);
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.8);
-  color: #0078d7;
-  transform: scale(1.05);
 }
 
 .reset-btn:hover {
@@ -764,5 +804,129 @@
   .desktop-icon-label {
     font-size: 10px;
     max-width: 60px;
+  }
+}
+
+.command-prompt {
+  position: fixed;
+  bottom: 30px;
+  left: 20px;
+  right: 20px;
+  background: #000;
+  border: 2px outset #c0c0c0;
+  border-radius: 0;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: "Consolas", "Courier New", monospace;
+  z-index: 50;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.command-prompt-header {
+  background: linear-gradient(90deg, #166aca 0%, #2e8dd6 50%, #166aca 100%);
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: 1px solid #0f5bb3;
+  font-family: "Consolas", "MS Sans Serif", sans-serif;
+}
+
+.command-prompt-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.command-prompt-header-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.command-prompt-icon {
+  color: #fff;
+  font-weight: bold;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.command-prompt-content {
+  background: #000;
+  color: #c0c0c0;
+  padding: 10px;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 0.9rem;
+  min-height: 40px;
+}
+
+.command-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  line-height: 1.4;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.command-prompt-path {
+  color: #ffffff;
+  margin-right: 12px;
+  font-weight: bold;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.command-text {
+  color: #ffffff;
+  flex: 1;
+  word-wrap: break-word;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.cursor {
+  color: #c0c0c0;
+  animation: blink 1s infinite;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .command-prompt {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+  }
+
+  .command-prompt-content {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .command-prompt {
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    font-size: 0.7rem;
+  }
+
+  .command-prompt-content {
+    padding: 6px;
+    font-size: 0.7rem;
   }
 }
