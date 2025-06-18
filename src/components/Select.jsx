@@ -144,7 +144,7 @@ const Select = ({ onBackToMenu, onStartGame, musicEnabled }) => {
         preload="auto"
         style={{ display: "none" }}
       >
-        <source src="/src/assets/music/HOLOGRAM.mp3" type="audio/mpeg" />
+        <source src="/music/HOLOGRAM.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
     </div>

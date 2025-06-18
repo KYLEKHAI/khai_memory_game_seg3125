@@ -487,7 +487,7 @@ const GameScreen = ({
       )}
 
       <audio ref={audioRef} loop preload="auto" style={{ display: "none" }}>
-        <source src="/src/assets/music/LEASE.mp3" type="audio/mpeg" />
+        <source src="/music/LEASE.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
 
@@ -502,7 +502,7 @@ const GameScreen = ({
         }}
         onError={(e) => console.log("STICHING audio error:", e)}
       >
-        <source src="/src/assets/music/STICHING.mp3" type="audio/mpeg" />
+        <source src="/music/STICHING.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
     </div>

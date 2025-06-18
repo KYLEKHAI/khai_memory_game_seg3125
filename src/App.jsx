@@ -105,7 +105,7 @@ function App() {
         preload="auto"
         style={{ display: "none" }}
       >
-        <source src="/src/assets/music/TOYOTA.mp3" type="audio/mpeg" />
+        <source src="/music/TOYOTA.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
     </>
