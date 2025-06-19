@@ -38,6 +38,8 @@ const GameScreen = ({
   const [typewriterText, setTypewriterText] = useState("");
   const [typewriterComplete, setTypewriterComplete] = useState(false);
   const [typewriterTrigger, setTypewriterTrigger] = useState(0);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [pendingKeySwitchMessage, setPendingKeySwitchMessage] = useState(false);
   const audioRef = useRef(null);
   const stichingAudioRef = useRef(null);
 
@@ -61,7 +63,6 @@ const GameScreen = ({
     "cyan",
   ];
 
-  // frutiger_aero.exe image slideshow
   const frutigerImages = [];
   for (let i = 89; i <= 188; i++) {
     frutigerImages.push(`/images-gifs/frutiger-aero-exe/asadal_stock_${i}.jpg`);
@@ -76,7 +77,25 @@ const GameScreen = ({
     return shuffled;
   };
 
-  // Game configurations
+  const shuffleKeyPositions = () => {
+    setKeys((prevKeys) => {
+      const shuffledKeys = [...prevKeys];
+      for (let i = shuffledKeys.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledKeys[i], shuffledKeys[j]] = [shuffledKeys[j], shuffledKeys[i]];
+      }
+
+      const correctKey = prevKeys[correctKeyIndex];
+      const newCorrectIndex = shuffledKeys.findIndex(
+        (key) =>
+          key.color === correctKey.color && key.image === correctKey.image
+      );
+      setCorrectKeyIndex(newCorrectIndex);
+
+      return shuffledKeys;
+    });
+  };
+
   const getGameConfig = (difficulty) => {
     const configs = {
       easy: { keys: 5, doors: 2 },
@@ -148,7 +167,7 @@ const GameScreen = ({
   }, [difficulty]);
   useEffect(() => {
     const fullText =
-      "Win the game by dragging and dropping the only working key into the only working gate!";
+      "Win the game by dragging and dropping the only working key into the only working gate! But beware, the keys will swap positions every three failed attempts, so remember the key colours!";
     let currentIndex = 0;
     setTypewriterText("");
     setTypewriterComplete(false);
@@ -221,6 +240,8 @@ const GameScreen = ({
     setShowSlideshow(false);
     setCurrentImageIndex(0);
     setShuffledImages([]);
+    setFailedAttempts(0);
+    setPendingKeySwitchMessage(false);
   };
 
   const handleDragStart = (e, keyIndex) => {
@@ -249,7 +270,13 @@ const GameScreen = ({
         )
       );
     } else {
+      const newFailedAttempts = failedAttempts + 1;
+      setFailedAttempts(newFailedAttempts);
       setMessage("Gate Closed");
+
+      if (newFailedAttempts % 3 === 0) {
+        setPendingKeySwitchMessage(true);
+      }
     }
 
     setDraggedKey(null);
@@ -259,6 +286,8 @@ const GameScreen = ({
     if (gameData) {
       initializeGame(gameData);
       setTypewriterTrigger((prev) => prev + 1);
+      setFailedAttempts(0);
+      setPendingKeySwitchMessage(false);
     }
   };
 
@@ -299,6 +328,14 @@ const GameScreen = ({
                   onClick={() => {
                     if (message.startsWith("Gate Opened!")) {
                       setShowFrutigerIcon(true);
+                    } else if (
+                      message === "Gate Closed" &&
+                      pendingKeySwitchMessage
+                    ) {
+                      shuffleKeyPositions();
+                      setMessage("Key positions have switched!");
+                      setPendingKeySwitchMessage(false);
+                      return;
                     }
                     setMessage("");
                   }}
@@ -315,6 +352,14 @@ const GameScreen = ({
                   onClick={() => {
                     if (message.startsWith("Gate Opened!")) {
                       setShowFrutigerIcon(true);
+                    } else if (
+                      message === "Gate Closed" &&
+                      pendingKeySwitchMessage
+                    ) {
+                      shuffleKeyPositions();
+                      setMessage("Key positions have switched!");
+                      setPendingKeySwitchMessage(false);
+                      return;
                     }
                     setMessage("");
                   }}
@@ -350,6 +395,12 @@ const GameScreen = ({
               <img src={key.image} alt={`${key.color} key`} />
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="attempt-tracker">
+        <div className="attempt-display">
+          Attempt {(failedAttempts % 3) + 1} of 3
         </div>
       </div>
 

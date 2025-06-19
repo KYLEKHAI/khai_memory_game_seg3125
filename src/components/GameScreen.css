@@ -774,7 +774,6 @@
   color: #666;
 }
 
-/* Responsive adjustments for Frutiger app */
 @media (max-width: 768px) {
   .frutiger-app-window {
     width: 90vw;
@@ -928,5 +927,53 @@
   .command-prompt-content {
     padding: 6px;
     font-size: 0.7rem;
+  }
+}
+
+.attempt-tracker {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 50;
+}
+
+.attempt-display {
+  background: linear-gradient(180deg, #ece9d8 0%, #ddd6c7 100%);
+  border: 2px outset #d4d0c8;
+  border-radius: 0;
+  padding: 8px 12px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #000;
+  letter-spacing: 0.5px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  backdrop-filter: none;
+  min-width: 100px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .attempt-tracker {
+    bottom: 15px;
+    left: 15px;
+  }
+
+  .attempt-display {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .attempt-tracker {
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .attempt-display {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+    min-width: 80px;
   }
 }
