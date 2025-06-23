@@ -39,7 +39,7 @@ const GameScreen = ({
   const [typewriterComplete, setTypewriterComplete] = useState(false);
   const [typewriterTrigger, setTypewriterTrigger] = useState(0);
   const [failedAttempts, setFailedAttempts] = useState(0);
-  const [pendingKeySwitchMessage, setPendingKeySwitchMessage] = useState(false);
+  const [gameWonMessage, setGameWonMessage] = useState(false);
   const audioRef = useRef(null);
   const stichingAudioRef = useRef(null);
 
@@ -165,25 +165,50 @@ const GameScreen = ({
     setGameData(config);
     initializeGame(config);
   }, [difficulty]);
+
   useEffect(() => {
-    const fullText =
-      "Win the game by dragging and dropping the only working key into the only working gate! But beware, the keys will swap positions every three failed attempts, so remember the key colours!";
-    let currentIndex = 0;
-    setTypewriterText("");
-    setTypewriterComplete(false);
+    if (!gameWonMessage) {
+      const fullText =
+        "Win the game by dragging and dropping the only working key into the only working gate! But beware, the keys will swap positions every three failed attempts, so remember the key colours!";
+      let currentIndex = 0;
+      setTypewriterText("");
+      setTypewriterComplete(false);
 
-    const typeInterval = setInterval(() => {
-      if (currentIndex < fullText.length) {
-        setTypewriterText(fullText.slice(0, currentIndex + 1));
-        currentIndex++;
-      } else {
-        setTypewriterComplete(true);
-        clearInterval(typeInterval);
-      }
-    }, 50);
+      const typeInterval = setInterval(() => {
+        if (currentIndex < fullText.length) {
+          setTypewriterText(fullText.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          setTypewriterComplete(true);
+          clearInterval(typeInterval);
+        }
+      }, 50);
 
-    return () => clearInterval(typeInterval);
-  }, [gameData, typewriterTrigger]);
+      return () => clearInterval(typeInterval);
+    }
+  }, [gameData, typewriterTrigger, gameWonMessage]);
+
+  useEffect(() => {
+    if (gameWonMessage) {
+      const congratulatoryText =
+        "Congratulations you have won the game! Click on the new application to enter the new world!";
+      let currentIndex = 0;
+      setTypewriterText("");
+      setTypewriterComplete(false);
+
+      const typeInterval = setInterval(() => {
+        if (currentIndex < congratulatoryText.length) {
+          setTypewriterText(congratulatoryText.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          setTypewriterComplete(true);
+          clearInterval(typeInterval);
+        }
+      }, 50);
+
+      return () => clearInterval(typeInterval);
+    }
+  }, [gameWonMessage]);
 
   useEffect(() => {
     if (showSlideshow) {
@@ -241,7 +266,7 @@ const GameScreen = ({
     setCurrentImageIndex(0);
     setShuffledImages([]);
     setFailedAttempts(0);
-    setPendingKeySwitchMessage(false);
+    setGameWonMessage(false);
   };
 
   const handleDragStart = (e, keyIndex) => {
@@ -262,8 +287,14 @@ const GameScreen = ({
     if (draggedKey === null) return;
 
     if (draggedKey === correctKeyIndex && gateIndex === correctGateIndex) {
-      setMessage("Gate Opened!\nA new application has been added to desktop!");
+      setMessage("");
+      setTimeout(() => {
+        setMessage(
+          "Gate Opened!\nA new application has been added to desktop!"
+        );
+      }, 10);
       setGameWon(true);
+      setGameWonMessage(true);
       setGates((prev) =>
         prev.map((gate, index) =>
           index === gateIndex ? { ...gate, occupied: true } : gate
@@ -272,11 +303,16 @@ const GameScreen = ({
     } else {
       const newFailedAttempts = failedAttempts + 1;
       setFailedAttempts(newFailedAttempts);
-      setMessage("Gate Closed");
 
-      if (newFailedAttempts % 3 === 0) {
-        setPendingKeySwitchMessage(true);
-      }
+      setMessage("");
+      setTimeout(() => {
+        if (newFailedAttempts % 3 === 0) {
+          setMessage("Gate Closed\n\nKey positions have switched!");
+          shuffleKeyPositions();
+        } else {
+          setMessage("Gate Closed");
+        }
+      }, 10);
     }
 
     setDraggedKey(null);
@@ -287,7 +323,6 @@ const GameScreen = ({
       initializeGame(gameData);
       setTypewriterTrigger((prev) => prev + 1);
       setFailedAttempts(0);
-      setPendingKeySwitchMessage(false);
     }
   };
 
@@ -328,14 +363,6 @@ const GameScreen = ({
                   onClick={() => {
                     if (message.startsWith("Gate Opened!")) {
                       setShowFrutigerIcon(true);
-                    } else if (
-                      message === "Gate Closed" &&
-                      pendingKeySwitchMessage
-                    ) {
-                      shuffleKeyPositions();
-                      setMessage("Key positions have switched!");
-                      setPendingKeySwitchMessage(false);
-                      return;
                     }
                     setMessage("");
                   }}
@@ -352,14 +379,6 @@ const GameScreen = ({
                   onClick={() => {
                     if (message.startsWith("Gate Opened!")) {
                       setShowFrutigerIcon(true);
-                    } else if (
-                      message === "Gate Closed" &&
-                      pendingKeySwitchMessage
-                    ) {
-                      shuffleKeyPositions();
-                      setMessage("Key positions have switched!");
-                      setPendingKeySwitchMessage(false);
-                      return;
                     }
                     setMessage("");
                   }}
