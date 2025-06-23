@@ -284,18 +284,18 @@
   position: fixed;
   bottom: 20px;
   left: 20px;
-  width: 70px;
-  height: 70px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(8px);
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 3px solid rgba(255, 255, 255, 0.6);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 24px rgba(31, 38, 135, 0.15);
+  box-shadow: 0 12px 36px rgba(31, 38, 135, 0.15);
   z-index: 9999;
   padding: 0;
 }
@@ -303,14 +303,14 @@
 .music-toggle:hover {
   background: rgba(255, 255, 255, 0.6);
   transform: scale(1.1);
-  box-shadow: 0 12px 32px rgba(31, 38, 135, 0.25);
+  box-shadow: 0 18px 48px rgba(31, 38, 135, 0.25);
 }
 
 .music-icon {
-  width: 60px;
-  height: 60px;
+  width: 85px;
+  height: 85px;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
 }
 
 .music-icon.enabled {
